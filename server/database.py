@@ -483,22 +483,27 @@ def init_database():
     # =========================================================================
     # SEED: Default Administrator (via environment variables, no hardcoded creds)
     # =========================================================================
-    # If ADMIN_EMAIL and ADMIN_PASSWORD env vars are set AND no admin exists yet,
-    # create the initial administrator. This keeps credentials out of the code.
+    # If ADMIN_EMAIL and ADMIN_PASSWORD env vars are set, make that email an admin
+    # (creating the account if needed, or promoting an existing account to admin).
     admin_email = os.environ.get('ADMIN_EMAIL', '').strip().lower()
     admin_password = os.environ.get('ADMIN_PASSWORD', '').strip()
     if admin_email and admin_password:
-        cursor.execute("SELECT COUNT(*) AS c FROM users WHERE role = 'admin';")
-        if cursor.fetchone()['c'] == 0:
-            from datetime import datetime as _dt
-            _now = _dt.utcnow().isoformat()
-            _pwd_hash, _salt = hash_password(admin_password)
+        from datetime import datetime as _dt
+        _now = _dt.utcnow().isoformat()
+        _pwd_hash, _salt = hash_password(admin_password)
+        _admin = cursor.execute("SELECT id, password_hash, salt FROM users WHERE email = ?;", (admin_email,)).fetchone()
+        if _admin:
+            cursor.execute('''
+                UPDATE users SET role='admin', account_status='active', plan_id='unlimited', plan_status='active',
+                                 password_hash=?, salt=?, updated_at=? WHERE email = ?;
+            ''', (_pwd_hash, _salt, _now, admin_email))
+        else:
             cursor.execute('''
                 INSERT INTO users (email, password_hash, salt, role, account_status, plan_id, plan_status, plan_start_date, created_at, updated_at)
                 VALUES (?, ?, ?, 'admin', 'active', 'unlimited', 'active', ?, ?, ?);
             ''', (admin_email, _pwd_hash, _salt, _now, _now, _now))
-            cursor.execute("INSERT OR IGNORE INTO profiles (user_id, name, school_level) SELECT id, 'مدير النظام', 'admin' FROM users WHERE email = ?;", (admin_email,))
-            print(f"Initial administrator created for {admin_email} from environment variables.")
+        cursor.execute("INSERT OR IGNORE INTO profiles (user_id, name, school_level) SELECT id, 'مدير النظام', 'admin' FROM users WHERE email = ?;", (admin_email,))
+        print(f"Administrator ensured for {admin_email} from environment variables.")
 
     conn.commit()
     conn.close()
