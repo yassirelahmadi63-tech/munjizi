@@ -103,7 +103,10 @@ def require_admin():
 
 def check_ai_usage_limit(user: dict) -> dict:
     user_id = user['id']
-    ai_limit = user.get('ai_limit_per_period', 10)
+    ai_limit = user.get('ai_limit_per_period')
+    if ai_limit is None:
+        ai_limit = 100000
+    ai_limit = int(ai_limit)
     
     conn = get_db()
     cursor = conn.cursor()
@@ -155,6 +158,9 @@ def check_ai_usage_limit(user: dict) -> dict:
     }
 
 def get_user_ai_stats(user_id: int, ai_limit: int) -> dict:
+    if ai_limit is None:
+        ai_limit = 100000
+    ai_limit = int(ai_limit)
     conn = get_db()
     cursor = conn.cursor()
     today = datetime.now(timezone.utc)

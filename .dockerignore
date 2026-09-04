@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.git/
+*.db
+munjizi-upload/
+munjizi-render.zip
+server_out.log
+server_err.log
+.venv/
+venv/
+.env

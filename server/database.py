@@ -425,6 +425,28 @@ def init_database():
             'is_active': 1,
         },
         {
+            'id': 'unlimited',
+            'name_ar': 'باقة النظام',
+            'name_en': 'System Unlimited',
+            'description': 'باقة مدير النظام — صلاحيات وحدود غير محدودة',
+            'price': 0,
+            'currency': 'SAR',
+            'percentage': 100,
+            'duration_days': 0,
+            'ai_limit_per_period': 100000,
+            'max_subjects': 0,
+            'features': json.dumps([
+                'صلاحيات إدارية كاملة',
+                'ذكاء اصطناعي غير محدود عملياً',
+                'مواد غير محدودة',
+                'إدارة المستخدمين والبطاقات والتحذيرات'
+            ], ensure_ascii=False),
+            'badge_label': '',
+            'color': 'slate',
+            'sort_order': 0,
+            'is_active': 1,
+        },
+        {
             'id': 'elite',
             'name_ar': 'باقة النخبة',
             'name_en': 'Elite Plan',
