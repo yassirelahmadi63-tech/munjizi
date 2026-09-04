@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: munjizi
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn server:app --workers 2 --timeout 120
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        value: /opt/render/project/src/munjizi.db
