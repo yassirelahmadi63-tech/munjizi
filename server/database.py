@@ -481,12 +481,14 @@ def init_database():
         cursor.execute("INSERT OR IGNORE INTO system_settings (key, value) VALUES (?, ?);", (key, value))
 
     # =========================================================================
-    # SEED: Default Administrator (via environment variables, no hardcoded creds)
+    # SEED: Default Administrator
     # =========================================================================
-    # If ADMIN_EMAIL and ADMIN_PASSWORD env vars are set, make that email an admin
-    # (creating the account if needed, or promoting an existing account to admin).
-    admin_email = os.environ.get('ADMIN_EMAIL', '').strip().lower()
-    admin_password = os.environ.get('ADMIN_PASSWORD', '').strip()
+    # The admin account is ensured on every startup. Its email/password come
+    # from ADMIN_EMAIL/ADMIN_PASSWORD env vars if set, otherwise fall back to
+    # the defaults below. Existing accounts are promoted to admin and the
+    # password is refreshed, so changing the values here takes effect on deploy.
+    admin_email = (os.environ.get('ADMIN_EMAIL') or 'manger@munjizi.edu').strip().lower()
+    admin_password = (os.environ.get('ADMIN_PASSWORD') or 'manger@1234').strip()
     if admin_email and admin_password:
         from datetime import datetime as _dt
         _now = _dt.utcnow().isoformat()
