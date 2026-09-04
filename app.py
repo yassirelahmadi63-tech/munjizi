@@ -1558,6 +1558,6 @@ def serve_static(filename):
 
 if __name__ == '__main__':
     import os as _os
-    port = int(_os.environ.get('PORT', '8080'))
+    port = int(_os.environ.get('PORT') or '8080')
     print(f"Starting Munjizi Multi-User Server on http://0.0.0.0:{port} ...")
     app.run(host='0.0.0.0', port=port, reloader=False, quiet=False)
